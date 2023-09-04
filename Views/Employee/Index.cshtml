@@ -1,0 +1,90 @@
+@model IndexViewModel
+
+@{
+    ViewData["Title"] = "Index";
+    var employees = (IEnumerable<Employee>)Model.Objects!;
+}
+
+<h1>Index</h1>
+
+<div class="row">
+    <div class="col-sm">
+        <p>
+            <a asp-action="Create">Create New</a>
+        </p>
+    </div>
+    <div class="col-sm">
+        <form class="input-group" asp-action="Index" asp-route-sortOrder="@ViewBag.CurrentSort">
+            <input name="filter" type="search" class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon"/>
+            <button type="submit" class="btn btn-outline-primary">search</button>
+        </form>
+    </div>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(ViewBag.CurrentFilter)) {
+    <form class="bg-light rounded d-inline-block" asp-action="Index">
+        <span class="label label-default">@ViewBag.CurrentFilter</span>
+        <button class="btn btn-close" type="submit"></button>
+    </form>
+}
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            <a asp-action="Index" asp-route-sortOrder="@ViewBag.NameSort">
+                @Html.DisplayNameFor(model => employees.FirstOrDefault()!.FullName)
+            </a>
+        </th>
+        <th>
+            <a asp-action="Index" asp-route-sortOrder="@ViewBag.CompanySort">
+                @Html.DisplayNameFor(model => employees.FirstOrDefault()!.Company)
+            </a>
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => employees.FirstOrDefault()!.Position)
+        </th>
+        <th>
+            <a asp-action="Index" asp-route-sortOrder="@ViewBag.SalarySort">
+                @Html.DisplayNameFor(model => employees.FirstOrDefault()!.Salary)
+            </a>
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in employees) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FullName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Company!.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Position)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Salary)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+@if (Model.PageViewModel!.HasPreviousPage) {
+    <a asp-action="Index" asp-route-page="@(Model.PageViewModel.PageNumber - 1)" asp-route-sortOrder="@ViewBag.CurrentSort"
+       asp-route-filter="@ViewBag.CurrentFilter" class="btn btn-outline-dark">
+        Back
+    </a>
+}
+@if (Model.PageViewModel!.HasNextPage) {
+    <a asp-action="Index" asp-route-page="@(Model.PageViewModel.PageNumber + 1)" asp-route-sortOrder="@ViewBag.CurrentSort"
+       asp-route-filter="@ViewBag.CurrentFilter" class="btn btn-outline-primary">
+        Next
+    </a>
+}
